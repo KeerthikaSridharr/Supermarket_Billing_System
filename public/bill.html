@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Bill</title>
+  <link rel="stylesheet" href="styles.css">
+  <style>
+    .bill-item {
+      border-bottom: 1px solid #ccc;
+      padding: 10px 0;
+    }
+  </style>
+</head>
+<body>
+  <h1>Bill</h1>
+  <div id="bill"></div>
+  <script>
+    window.onload = function() {
+      fetchBill();
+    };
+
+    function fetchBill() {
+      fetch('/api/cart/bill')
+        .then(response => response.json())
+        .then(data => {
+          const billContainer = document.getElementById('bill');
+          billContainer.innerHTML = ''; 
+
+          data.items.forEach(item => {
+            const itemElement = document.createElement('div');
+            itemElement.classList.add('bill-item');
+            itemElement.innerHTML = `
+              <p>${item.name} - $${item.price} x ${item.quantity} = $${item.total}</p>
+            `;
+            billContainer.appendChild(itemElement);
+          });
+
+          const totalElement = document.createElement('p');
+          totalElement.innerHTML = `Total: $${data.total}`;
+          billContainer.appendChild(totalElement);
+        })
+        .catch(error => {
+          console.error('Error fetching bill:', error);
+          const billContainer = document.getElementById('bill');
+          billContainer.innerHTML = '<p>Error fetching bill. Please try again later.</p>';
+        });
+    }
+  </script>
+</body>
+</html>
